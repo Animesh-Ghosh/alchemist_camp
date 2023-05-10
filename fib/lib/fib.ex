@@ -1,13 +1,9 @@
 defmodule Fib do
-  def time(func, arg) do
-    start = Time.utc_now()
-    func.(arg)
-    Time.diff(Time.utc_now(), start, :millisecond)
-  end
+  alias Fib.Timer
 
   def compare(n \\ 45) do
-    IO.puts("Naive: #{time(&naive/1, n)}")
-    IO.puts("Faster: #{time(&faster/1, n)}")
+    IO.puts("Naive: #{Timer.time(&naive/1, n)}")
+    IO.puts("Faster: #{Timer.time(&faster/1, n)}")
   end
 
   def naive(1), do: 0
@@ -15,6 +11,10 @@ defmodule Fib do
 
   def naive(n) do
     naive(n - 1) + naive(n - 2)
+  end
+
+  def naive(x, y) do
+    naive(x + y)
   end
 
   def faster(n), do: faster(n, 0, 1)
