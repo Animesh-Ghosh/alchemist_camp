@@ -5,5 +5,12 @@
 			"elixirVersion": "latest",
 			"erlangVersion": "latest"
 		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"mjmcloug.vscode-elixir"
+			]
+		}
 	}
 }
