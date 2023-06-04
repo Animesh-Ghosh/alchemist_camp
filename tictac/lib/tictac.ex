@@ -1,5 +1,5 @@
 defmodule Tictac do
-  @players {:x, :o}
+  alias Tictac.Square
 
   def check_player(player) do
     case player do
@@ -23,13 +23,5 @@ defmodule Tictac do
          {:ok, square} <- Square.new(row, col),
          {:ok, new_board} <- place_piece(board, square, valid_player),
          do: new_board
-  end
-
-  def new_board do
-    for square <- squares(), into: %{}, do: {square, :empty}
-  end
-
-  def squares do
-    for row <- 1..3, col <- 1..3, into: MapSet.new(), do: %Square{row: row, col: col}
   end
 end
