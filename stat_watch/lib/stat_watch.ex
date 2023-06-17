@@ -1,6 +1,6 @@
 defmodule StatWatch do
   def column_names do
-    Enum.join(~w(DateTime Subscribers Videos Views), ",")
+    Enum.join(~w(datetime url origin headers args), ",")
   end
 
   def run do
@@ -11,16 +11,16 @@ defmodule StatWatch do
   def fetch_stats do
     now = DateTime.to_string(%{DateTime.utc_now() | microsecond: {0, 0}})
     %{body: body} = HTTPoison.get!(stat_url())
-    # %{items: [%{statistics: statistics} | _]} = Poison.decode!(body, keys: :atoms)
+    %{url: url, origin: origin, headers: headers, args: args} = Poison.decode!(body, keys: :atoms)
 
-    # [
-    #   now,
-    #   statistics.subscriberCount,
-    #   statistics.videoCount,
-    #   statistics.viewCount
-    # ]
-    # |> Enum.join(",")
-    body
+    [
+      now,
+      url,
+      origin,
+      Poison.encode!(headers),
+      Poison.encode!(args)
+    ]
+    |> Enum.join(",")
   end
 
   def save_csv(row_of_stats) do
@@ -34,10 +34,6 @@ defmodule StatWatch do
   end
 
   def stat_url do
-    youtube_api_v3 = "https://www.googleapis.com/youtube/v3/"
-    channel = "id=" <> "<channel ID>"
-    key = "key=" <> "<API key>"
-    IO.puts("#{youtube_api_v3}channels?#{channel}&#{key}&part=statistics")
-    "httpbin.org/get"
+    "https://httpbin.org/get"
   end
 end
