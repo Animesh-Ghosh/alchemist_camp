@@ -21,17 +21,25 @@ defmodule Campsite.Application do
   end
 
   def start_cowboy() do
-    route1 = {"/", Campsite.Web.PageHandler, :base}
-    route2 = {"/2", Campsite.Web.PageHandler, :two}
-    route3 = {"/contact", Campsite.Web.PageHandler, :contact}
-    others = {:_, Campsite.Web.PageHandler, :others}
+    root_route = {"/", :cowboy_static, {:priv_file, :campsite, "static/index.html"}}
+    static_route = {"/[...]", :cowboy_static, {:priv_dir, :campsite, "static"}}
+    main_route = {:_, Campsite.Web.PageHandler, Campsite.Web.Router}
 
-    dispatch = :cowboy_router.compile([{:_, [route1, route2, route3, others]}])
-    opts = [port: 4000]
+    dispatch =
+      :cowboy_router.compile([
+        {:_,
+         [
+           root_route,
+           static_route,
+           main_route
+         ]}
+      ])
+
+    opts = [port: 8080]
     env = [dispatch: dispatch]
 
     case :cowboy.start_http(:http, 10, opts, env: env) do
-      {:ok, _pid} -> IO.puts("cowboy server running... Go to http://localhost:4000")
+      {:ok, _pid} -> IO.puts("cowboy server running... Go to http://localhost:8080")
       _ -> IO.puts("Error starting cowboy web server!")
     end
   end
