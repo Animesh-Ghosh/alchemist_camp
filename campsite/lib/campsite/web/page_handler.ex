@@ -4,10 +4,18 @@ defmodule Campsite.Web.PageHandler do
   end
 
   def handle(req, router) do
-    headers = [{"Content-Type", "text/html"}]
-
     {path, req} = :cowboy_req.path(req)
-    {:ok, resp} = :cowboy_req.reply(200, headers, router.call(path), req)
+    conn = %Glue.Conn{req_path: path}
+    conn = router.call(conn)
+
+    {:ok, resp} =
+      :cowboy_req.reply(
+        conn.status,
+        conn.resp_headers,
+        conn.resp_body,
+        req
+      )
+
     {:ok, resp, router}
   end
 

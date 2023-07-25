@@ -22,16 +22,16 @@ defmodule Campsite.Application do
 
   def start_cowboy() do
     root_route = {"/", :cowboy_static, {:priv_file, :campsite, "static/index.html"}}
-    static_route = {"/[...]", :cowboy_static, {:priv_dir, :campsite, "static"}}
     main_route = {:_, Campsite.Web.PageHandler, Campsite.Web.Router}
+    static_route = {"/[...]", :cowboy_static, {:priv_dir, :campsite, "static"}}
 
     dispatch =
       :cowboy_router.compile([
         {:_,
          [
            root_route,
-           static_route,
-           main_route
+           main_route,
+           static_route
          ]}
       ])
 
