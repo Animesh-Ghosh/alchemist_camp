@@ -1,4 +1,6 @@
 defmodule Campsite.Web.Router do
+  @template_path "lib/campsite/web/templates"
+
   import Glue.Conn
 
   def call(conn) do
@@ -20,9 +22,36 @@ defmodule Campsite.Web.Router do
     </h1>))
   end
 
-  defp content_for(_, conn) do
+  defp content_for("/hello", conn) do
     conn
-    |> put_resp_body("<h1>Page not found! :(</h1>")
+    |> assign(:adj, "mysterious")
+    |> render("hello")
+  end
+
+  defp content_for(other, conn) do
+    name = Path.basename(other)
+
+    if Enum.member?(get_templates(), name) do
+      render(conn, name)
+    else
+      not_found(conn, name)
+    end
+  end
+
+  defp not_found(conn, route) do
+    conn
+    |> put_resp_body("<h1>Page not found at #{route}! :(</h1>")
     |> put_status(404)
+  end
+
+  defp render(conn, name) do
+    body = EEx.eval_file("#{@template_path}/#{name}.eex", Map.to_list(conn.assigns))
+    put_resp_body(conn, body)
+  end
+
+  defp get_templates() do
+    for template <- Path.wildcard("#{@template_path}/*.eex") do
+      Path.basename(template, ".eex")
+    end
   end
 end

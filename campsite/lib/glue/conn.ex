@@ -1,5 +1,6 @@
 defmodule Glue.Conn do
-  defstruct req_path: "",
+  defstruct assigns: %{},
+            req_path: "",
             resp_headers: [{"Content-Type", "text/html"}],
             resp_body: "",
             status: 200
@@ -10,5 +11,9 @@ defmodule Glue.Conn do
 
   def put_status(conn, code) do
     %{conn | status: code}
+  end
+
+  def assign(%Glue.Conn{assigns: assigns} = conn, key, value) do
+    %{conn | assigns: Map.put(assigns, key, value)}
   end
 end
